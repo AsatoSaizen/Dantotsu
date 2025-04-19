@@ -1,34 +1,41 @@
-name: Build APK (Unsigned)
+name: Build Google Alpha - Dantotsu
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
   workflow_dispatch:
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
+  JAVA_OPTS: "-Xmx4g"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
+    
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: 11
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
+      - name: Fix string formatting
+        run: |
+          sed -i 's/%s.*%s/%1\$s %2\$s/g' app/src/main/res/values/strings.xml
 
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
 
-    - name: Upload Unsigned APK
-      uses: actions/upload-artifact@v3@99f97e7f913da0ef5a768eabf3bb4a7e27127d00
-      with:
-        name: unsigned-debug-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Build Google Alpha APK
+        run: ./gradlew assembleGoogleAlpha --stacktrace --info
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dantotsu-google-alpha.apk
+          path: app/build/outputs/apk/google/alpha/app-google-alpha.apk
