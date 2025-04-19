@@ -28,7 +28,7 @@ jobs:
       run: ./gradlew assembleDebug
 
     - name: Upload Unsigned APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v3@99f97e7f913da0ef5a768eabf3bb4a7e27127d00
       with:
         name: unsigned-debug-apk
         path: app/build/outputs/apk/debug/app-debug.apk
